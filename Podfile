@@ -10,7 +10,7 @@ def pods
 
   # UI
   pod 'lottie-ios', '~> 2.5'
-  pod 'Texture', '~> 2.7'
+  pod 'Texture/Core', '~> 2.7'
 
   # Reactive
   pod 'ReactiveSwift', '~> 4.0'

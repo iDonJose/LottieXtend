@@ -26,6 +26,6 @@ Pod::Spec.new do |s|
 
     s.dependency "ReactiveSwift", "~> 4.0"
 	s.dependency "lottie-ios", "~> 2.5"
-	s.dependency "Texture", "~> 2.7"
+	s.dependency "Texture/Core", "~> 2.7"
 
 end
