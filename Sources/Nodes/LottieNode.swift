@@ -142,7 +142,7 @@ public final class LottieNode: ASDisplayNode {
 	private func bindInputs() {
 
 		inputs.play.producer
-			.observe(on: UIScheduler())
+			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView.play()
@@ -150,7 +150,7 @@ public final class LottieNode: ASDisplayNode {
 			}
 
 		inputs.playSection.producer
-			.observe(on: UIScheduler())
+			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] start, end in
 				guard let self = self else { return }
@@ -167,7 +167,7 @@ public final class LottieNode: ASDisplayNode {
 			}
 
 		inputs.pause.producer
-			.observe(on: UIScheduler())
+			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView.pause()
@@ -175,7 +175,7 @@ public final class LottieNode: ASDisplayNode {
 			}
 
 		inputs.stop.producer
-			.observe(on: UIScheduler())
+			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView.stop()
@@ -183,7 +183,7 @@ public final class LottieNode: ASDisplayNode {
 			}
 
 		inputs.progress.producer
-			.observe(on: UIScheduler())
+			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] in
 				self?.lottieView.animationProgress = $0
