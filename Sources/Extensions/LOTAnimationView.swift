@@ -11,19 +11,6 @@ import Lottie
 
 extension LOTAnimationView {
 
-	/// Sets animation source file and bundle.
-	public func setAnimation(file: String,
-							 bundle: Bundle) {
-
-		#if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR
-		clipsToBounds = true
-		#endif
-
-		sceneModel = LOTComposition(name: file, bundle: bundle)
-
-	}
-
-
 	// MARK: - Sub-View
 
 	/// Converts a point from the animation view's coordinate space into one's of a specific layer.
