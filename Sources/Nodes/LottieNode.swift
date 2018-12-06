@@ -15,7 +15,7 @@ public final class LottieNode: ASDisplayNode {
 
 	// MARK: Views
 
-	var lottieView: LOTAnimationView!
+	var lottieView: LOTAnimationView?
 
 
 	// MARK: Properties
@@ -39,68 +39,84 @@ public final class LottieNode: ASDisplayNode {
 
 		setViewBlock { [unowned self] in
 
-			self.lottieView = LOTAnimationView()
+            var lottieView: LOTAnimationView
 
-			if let file = file {
-				self.lottieView.setAnimation(file: file, bundle: bundle)
-			}
 
-			self.lottieView.shouldRasterizeWhenIdle = true
+            if let (name, bundle) = self.inputs.file.value {
+                lottieView = LOTAnimationView(name: name, bundle: bundle)
+            }
+            else if let url = self.inputs.url.value {
+                lottieView = LOTAnimationView(contentsOf: url)
+            }
+            else {
+                lottieView = LOTAnimationView()
+            }
 
-			self.lottieView.completionBlock = { [weak self] _ in
-				self?.outputs._isAnimating.swap(false)
-			}
 
-			self.lottieView.loopAnimation = self.pendingProperties.autoRepeats
-			self.lottieView.autoReverseAnimation = self.pendingProperties.isReversed
-			self.lottieView.animationSpeed = self.pendingProperties.speed
-			self.lottieView.shouldRasterizeWhenIdle = self.pendingProperties.shouldRasterize
-			self.lottieView.contentMode = self.pendingProperties.contentMode
+            self.setupLottieView(lottieView)
+            self.lottieView = lottieView
 
-			if self.autoStart {
-				self.lottieView.play()
-				self.outputs._isAnimating.swap(true)
-			}
+            defer {
+                // Starts animation if needed
+                if self.visual.autoStart {
+                    lottieView.play { [weak self] _ in self?.outputs._isAnimating.swap(false) }
+                    self.outputs._isAnimating.swap(true)
+                }
+            }
 
-			// Releases pendingProperties as is no more needed
-			self.pendingProperties = nil
 
-			return self.lottieView!
+            let container = UIView()
+            container.addSubview(lottieView)
+
+			return container
 		}
 
 	}
+
+
+    private func setupLottieView(_ lottieView: LOTAnimationView) {
+
+        lottieView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        applyVisual(to: lottieView)
+
+    }
+
+    private func addLottieView(_ lottieView: LOTAnimationView) {
+
+        self.lottieView = lottieView
+
+        lottieView.frame = view.bounds
+        view.addSubview(lottieView)
+
+        // Layouts
+        invalidateCalculatedLayout()
+        supernode?.setNeedsLayout()
+
+        // Starts animation if needed
+        if visual.autoStart {
+            lottieView.play { [weak self] _ in self?.outputs._isAnimating.swap(false) }
+            outputs._isAnimating.swap(true)
+        }
+
+    }
+
+    private func clearLottieView() {
+
+        lottieView?.stop()
+        lottieView?.removeFromSuperview()
+        lottieView = nil
+        outputs._isAnimating.swap(false)
+
+    }
 
 
 
 	// MARK: - Lifecycle
 
-	public override func didEnterDisplayState() {
-		super.didEnterDisplayState()
+    public override func didLoad() {
+		super.didLoad()
 		queue.queue.async { self.bindInputs() }
-	}
-
-
-
-	// MARK: - Methods
-
-	/// Changes animation source file and bundle.
-	///
-	/// - Parameters:
-	///   - file: File name
-	///   - bundle: Bundle
-	public func setAnimation(file: String,
-							 bundle: Bundle = .main) {
-
-		lottieView.setAnimation(file: file, bundle: bundle)
-
-		invalidateCalculatedLayout()
-		supernode?.setNeedsLayout()
-
-		if autoStart {
-			lottieView.play()
-			outputs._isAnimating.swap(true)
-		}
-
 	}
 
 
@@ -108,6 +124,11 @@ public final class LottieNode: ASDisplayNode {
 	// MARK: - Inputs
 
 	public struct Inputs {
+
+        /// File containing animation
+        public let file = MutableProperty<(name: String, bundle: Bundle)?>(nil)
+        /// URL containing animation
+        public let url = MutableProperty<URL?>(nil)
 
 		/// Plays animation
 		public let play = MutableProperty<()?>(nil)
@@ -128,11 +149,32 @@ public final class LottieNode: ASDisplayNode {
 
 	private func bindInputs() {
 
+        inputs.file.producer
+            .start(on: UIScheduler())
+            .skipNil()
+            .startWithValues { [weak self] name, bundle in
+                let lottieView = LOTAnimationView(name: name, bundle: bundle)
+                self?.clearLottieView()
+                self?.setupLottieView(lottieView)
+                self?.addLottieView(lottieView)
+            }
+
+        inputs.url.producer
+            .start(on: UIScheduler())
+            .skipNil()
+            .startWithValues { [weak self] url in
+                let lottieView = LOTAnimationView(contentsOf: url)
+                self?.clearLottieView()
+                self?.setupLottieView(lottieView)
+                self?.addLottieView(lottieView)
+            }
+
+
 		inputs.play.producer
 			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] _ in
-				self?.lottieView.play()
+				self?.lottieView?.play { [weak self] _ in self?.outputs._isAnimating.swap(false) }
 				self?.outputs._isAnimating.swap(true)
 			}
 
@@ -140,16 +182,14 @@ public final class LottieNode: ASDisplayNode {
 			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] start, end in
-				guard let self = self else { return }
 
-				if let start = start {
-					self.lottieView.play(fromProgress: start, toProgress: end, withCompletion: nil)
-				}
-				else {
-					self.lottieView.play(toProgress: end, withCompletion: nil)
-				}
+                let progress = self?.lottieView?.animationProgress ?? 0
 
-				self.outputs._isAnimating.swap(true)
+				self?.lottieView?.play(fromProgress: start ?? progress, toProgress: end) { [weak self] _ in
+                    self?.outputs._isAnimating.swap(false)
+                }
+
+				self?.outputs._isAnimating.swap(true)
 
 			}
 
@@ -157,7 +197,7 @@ public final class LottieNode: ASDisplayNode {
 			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] _ in
-				self?.lottieView.pause()
+				self?.lottieView?.pause()
 				self?.outputs._isAnimating.swap(false)
 			}
 
@@ -165,7 +205,7 @@ public final class LottieNode: ASDisplayNode {
 			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] _ in
-				self?.lottieView.stop()
+				self?.lottieView?.stop()
 				self?.outputs._isAnimating.swap(false)
 			}
 
@@ -173,7 +213,7 @@ public final class LottieNode: ASDisplayNode {
 			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] in
-				self?.lottieView.animationProgress = $0
+				self?.lottieView?.animationProgress = $0
 				self?.outputs._isAnimating.swap(false)
 			}
 
@@ -199,7 +239,7 @@ public final class LottieNode: ASDisplayNode {
 
 	public override func calculateSizeThatFits(_ constrainedSize: CGSize) -> CGSize {
 
-		return lottieView.sceneModel?.compBounds.size
+		return lottieView?.sceneModel?.compBounds.size
 			?? constrainedSize
 	}
 
