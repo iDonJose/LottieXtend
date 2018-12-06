@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <Swifty/Swifty.h>
 
 //! Project version number for LottieXtend.
 FOUNDATION_EXPORT double LottieXtendVersionNumber;
