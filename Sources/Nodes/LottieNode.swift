@@ -20,19 +20,6 @@ public final class LottieNode: ASDisplayNode {
 
 	// MARK: Properties
 
-	/// Will start animation automatically
-	public var autoStart = false
-
-	var pendingProperties: Properties! = .init()
-
-	struct Properties {
-		var autoRepeats = false
-		var isReversed = false
-		var speed: CGFloat = 1
-		var shouldRasterize = true
-		var contentMode: UIView.ContentMode = .scaleAspectFit
-	}
-
 	private lazy var queue = QueueScheduler(qos: .userInitiated, name: hexAddress(self))
 
 
@@ -214,6 +201,76 @@ public final class LottieNode: ASDisplayNode {
 
 		return lottieView.sceneModel?.compBounds.size
 			?? constrainedSize
+	}
+
+
+
+	// MARK: - Visual
+
+	public var visual = Visual() {
+		didSet { needsDisplay = visual != oldValue }
+	}
+
+	private var needsDisplay = false
+
+	public func displayVisual() {
+
+		guard needsDisplay else { return }
+		needsDisplay = false
+
+		guard let lottieView = lottieView else { return }
+
+		applyVisual(to: lottieView)
+
+	}
+
+    private func applyVisual(to lottieView: LOTAnimationView) {
+        lottieView.loopAnimation = visual.autoRepeats
+        lottieView.autoReverseAnimation = visual.isReversed
+        lottieView.animationSpeed = visual.speed
+        lottieView.shouldRasterizeWhenIdle = visual.shouldRasterize
+        lottieView.contentMode = visual.contentMode
+    }
+
+
+	public struct Visual: Equatable {
+
+		/// Animation will start automatically
+		public var autoStart: Bool
+		/// Animation will repeat indefinitely
+		public var autoRepeats: Bool
+		/// Animation will be reversed when repeating
+		public var isReversed: Bool
+		/// Animation's speed
+		public var speed: CGFloat
+		/// Layer will be rasterized when animation is paused
+		public var shouldRasterize: Bool
+		/// Animation view's content mode
+		public var contentMode: UIView.ContentMode
+
+
+		// MARK: - Initialize
+
+		public init() {
+			self.init(autoStart: false)
+		}
+
+		public init(autoStart: Bool = false,
+					autoRepeats: Bool = false,
+					isReversed: Bool = false,
+					speed: CGFloat = 1,
+					shouldRasterize: Bool = true,
+					contentMode: UIView.ContentMode = .scaleAspectFit) {
+
+			self.autoStart = autoStart
+			self.autoRepeats = autoRepeats
+			self.isReversed = isReversed
+			self.speed = speed
+			self.shouldRasterize = shouldRasterize
+			self.contentMode = contentMode
+
+		}
+
 	}
 
 }

@@ -14,12 +14,12 @@ let node = LottieNode(file: "switch.json", bundle: .main)
  Set properties before or after underlying animation view is loaded.
  */
 
-node.autoStart = true
-node.autoRepeats = true
-node.isReversed = false
-node.speed = 2
-node.shouldRasterize = true
-node.contentMode = .scaleAspectFit
+node.visual.autoStart = true
+node.visual.autoRepeats = true
+node.visual.isReversed = false
+node.visual.speed = 2
+node.visual.shouldRasterize = true
+node.visual.contentMode = .scaleAspectFit
 
 /*:
  ### `setAnimation(file:bundle:)`
