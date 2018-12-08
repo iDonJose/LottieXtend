@@ -71,6 +71,8 @@ public final class LottieNode: ASDisplayNode {
 			return container
 		}
 
+		defer { visual = .init() }
+
 	}
 
 
@@ -116,6 +118,7 @@ public final class LottieNode: ASDisplayNode {
 
     public override func didLoad() {
 		super.didLoad()
+		displayVisual()
 		queue.queue.async { self.bindInputs() }
 	}
 
