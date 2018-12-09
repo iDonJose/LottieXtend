@@ -12,6 +12,12 @@ import Lottie
 /// Animation view's proxy
 extension LottieNode {
 
+    /// Progress
+    public var progress: Double {
+        return Double(lottieView?.animationProgress ?? 0)
+    }
+
+
 	// MARK: Methods
 
 	/// Adds a view to a given layer
