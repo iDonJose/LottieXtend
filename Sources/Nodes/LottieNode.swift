@@ -59,7 +59,7 @@ public final class LottieNode: ASDisplayNode {
             defer {
                 // Starts animation if needed
                 if self.visual.autoStart {
-                    lottieView.play { [weak self] _ in self?.outputs._isAnimating.swap(false) }
+                    lottieView.play { [weak self] in self?.didStopAnimation(isComplete: $0) }
                     self.outputs._isAnimating.swap(true)
                 }
             }
@@ -97,7 +97,7 @@ public final class LottieNode: ASDisplayNode {
 
         // Starts animation if needed
         if visual.autoStart {
-            lottieView.play { [weak self] _ in self?.outputs._isAnimating.swap(false) }
+            lottieView.play { [weak self] in self?.didStopAnimation(isComplete: $0) }
             outputs._isAnimating.swap(true)
         }
 
@@ -177,7 +177,7 @@ public final class LottieNode: ASDisplayNode {
 			.start(on: UIScheduler())
 			.skipNil()
 			.startWithValues { [weak self] _ in
-				self?.lottieView?.play { [weak self] _ in self?.outputs._isAnimating.swap(false) }
+				self?.lottieView?.play { [weak self] in self?.didStopAnimation(isComplete: $0) }
 				self?.outputs._isAnimating.swap(true)
 			}
 
@@ -188,8 +188,8 @@ public final class LottieNode: ASDisplayNode {
 
                 let progress = self?.lottieView?.animationProgress ?? 0
 
-				self?.lottieView?.play(fromProgress: start ?? progress, toProgress: end) { [weak self] _ in
-                    self?.outputs._isAnimating.swap(false)
+				self?.lottieView?.play(fromProgress: start ?? progress, toProgress: end) { [weak self] in
+                    self?.didStopAnimation(isComplete: $0)
                 }
 
 				self?.outputs._isAnimating.swap(true)
@@ -215,6 +215,7 @@ public final class LottieNode: ASDisplayNode {
 		inputs.progress.producer
 			.start(on: UIScheduler())
 			.skipNil()
+            .skipRepeats()
 			.startWithValues { [weak self] in
 				self?.lottieView?.animationProgress = $0
 				self?.outputs._isAnimating.swap(false)
@@ -228,13 +229,27 @@ public final class LottieNode: ASDisplayNode {
 
 	public struct Outputs {
 
+        /// Animation is running
 		public var isAnimating: Property<Bool> { return .init(self._isAnimating) }
 		fileprivate let _isAnimating = MutableProperty<Bool>(false)
+
+        /// Animation was stopped, forwarding wether animation was not interrupted and went through a the targeted progress
+        public var wasStopped: Property<Bool?> { return .init(self._wasStopped) }
+        fileprivate let _wasStopped = MutableProperty<Bool?>(nil)
 
 	}
 
 
 	public lazy var outputs = Outputs()
+
+
+
+    // MARK: - Methods
+
+    private func didStopAnimation(isComplete: Bool) {
+        outputs._isAnimating.swap(false)
+        outputs._wasStopped.swap(isComplete)
+    }
 
 
 
