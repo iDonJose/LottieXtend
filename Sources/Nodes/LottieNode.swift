@@ -26,16 +26,8 @@ public final class LottieNode: ASDisplayNode {
 
 	// MARK: - Initialize
 
-	/// Initializes a new LottieNode.
-	///
-	/// - Parameters:
-	///   - file: Name of the file containing the animation
-	///   - bundle: Bundle
-	///	  - autoStart: Will start animation automatically
-	///   - setupView: Sets up animation view once initialized
-	public init(file: String? = nil,
-				bundle: Bundle = .main) {
-		super.init()
+    public override init() {
+        super.init()
 
 		setViewBlock { [unowned self] in
 
@@ -72,7 +64,6 @@ public final class LottieNode: ASDisplayNode {
 		}
 
 		defer { visual = .init() }
-
 	}
 
 
