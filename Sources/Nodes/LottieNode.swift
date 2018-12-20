@@ -69,9 +69,9 @@ public final class LottieNode: ASDisplayNode {
 
     private func setupLottieView(_ lottieView: LOTAnimationView) {
 
-        lottieView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+		lottieView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
-        applyVisual(to: lottieView)
+		applyVisual(to: lottieView)
 
     }
 
@@ -147,20 +147,24 @@ public final class LottieNode: ASDisplayNode {
             .start(on: UIScheduler())
             .skipNil()
             .startWithValues { [weak self] name, bundle in
-                let lottieView = LOTAnimationView(name: name, bundle: bundle)
-                self?.clearLottieView()
-                self?.setupLottieView(lottieView)
-                self?.addLottieView(lottieView)
+                DispatchQueue.main.async {
+                    let lottieView = LOTAnimationView(name: name, bundle: bundle)
+                    self?.clearLottieView()
+                    self?.setupLottieView(lottieView)
+                    self?.addLottieView(lottieView)
+                }
             }
 
         inputs.url.producer
             .start(on: UIScheduler())
             .skipNil()
             .startWithValues { [weak self] url in
-                let lottieView = LOTAnimationView(contentsOf: url)
-                self?.clearLottieView()
-                self?.setupLottieView(lottieView)
-                self?.addLottieView(lottieView)
+                DispatchQueue.main.async {
+                    let lottieView = LOTAnimationView(contentsOf: url)
+                    self?.clearLottieView()
+                    self?.setupLottieView(lottieView)
+                    self?.addLottieView(lottieView)
+                }
             }
 
 
@@ -181,7 +185,7 @@ public final class LottieNode: ASDisplayNode {
 
 				self?.lottieView?.play(fromProgress: start ?? progress, toProgress: end) { [weak self] in
                     self?.didStopAnimation(isComplete: $0)
-                }
+				}
 
 				self?.outputs._isAnimating.swap(true)
 
