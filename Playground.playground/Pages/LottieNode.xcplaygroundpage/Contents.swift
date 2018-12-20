@@ -3,11 +3,7 @@ import LottieXtend
 import PlaygroundSupport
 
 
-/*:
- ### `init(file:bundle:)`
- Initializes a LottieNode from a source file and bundle.
- */
-let node = LottieNode(file: "switch.json", bundle: .main)
+let node = LottieNode()
 
 /*:
  ### `autoStart`, `autoRepeats`, `isReversed`, `speed`, `shouldRasterize`, `contentMode`
@@ -25,7 +21,7 @@ node.visual.contentMode = .scaleAspectFit
  ### `setAnimation(file:bundle:)`
  Changes source file and bundle of animation.
  */
-//node.setAnimation(file: "switch.json", bundle: .main)
+node.inputs.file.swap((name: "switch.json", bundle: .main))
 
 /*:
  ### `Inputs.play`, `Inputs.playSection`, `Inputs.pause`, `Inputs. stop`, `Inputs.progress`
@@ -54,10 +50,13 @@ node.outputs.isAnimating.producer
 
 
 
+node.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+
 let container = ASDisplayNode()
 container.frame.size = .init(width: 400, height: 600)
 container.addSubnode(node)
 container.layoutSpecBlock = { _, _ in
+    node.style.preferredSize = CGSize(width: 60, height: 40)
     return ASCenterLayoutSpec(centeringOptions: .XY, sizingOptions: [], child: node)
 }
 

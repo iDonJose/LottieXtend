@@ -3,14 +3,14 @@ import LottieXtend
 import PlaygroundSupport
 
 
-let lottieView = LOTAnimationView()
+var lottieView = LOTAnimationView()
 
 /*:
  ### `setAnimation(file:bundle:)`
  Sets animation source file and bundle.
  */
 
-lottieView.setAnimation(file: "animation.json", bundle: .main)
+lottieView = LOTAnimationView.init(name: "animation.json", bundle: .main)
 
 /*:
  ### `addSubView(_:toLayerNamed:)`
