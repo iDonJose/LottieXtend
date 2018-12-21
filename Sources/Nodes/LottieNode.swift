@@ -146,6 +146,7 @@ public final class LottieNode: ASDisplayNode {
         inputs.file.producer
             .start(on: UIScheduler())
             .skipNil()
+            .skipRepeats { $0.name == $1.name && $0.bundle == $1.bundle }
             .startWithValues { [weak self] name, bundle in
                 DispatchQueue.main.async {
                     let lottieView = LOTAnimationView(name: name, bundle: bundle)
@@ -158,6 +159,7 @@ public final class LottieNode: ASDisplayNode {
         inputs.url.producer
             .start(on: UIScheduler())
             .skipNil()
+            .skipRepeats()
             .startWithValues { [weak self] url in
                 DispatchQueue.main.async {
                     let lottieView = LOTAnimationView(contentsOf: url)
