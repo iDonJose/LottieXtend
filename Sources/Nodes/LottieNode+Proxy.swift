@@ -17,6 +17,11 @@ extension LottieNode {
         return Double(lottieView?.animationProgress ?? 0)
     }
 
+    /// Frame rate
+    public var fps: Int? {
+        return lottieView?.sceneModel?.framerate?.intValue
+    }
+
 
 	// MARK: Methods
 
