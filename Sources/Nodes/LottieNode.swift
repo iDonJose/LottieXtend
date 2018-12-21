@@ -144,34 +144,30 @@ public final class LottieNode: ASDisplayNode {
 	private func bindInputs() {
 
         inputs.file.producer
-            .start(on: UIScheduler())
+            .observe(on: QueueScheduler.main)
             .skipNil()
             .skipRepeats { $0.name == $1.name && $0.bundle == $1.bundle }
             .startWithValues { [weak self] name, bundle in
-                DispatchQueue.main.async {
-                    let lottieView = LOTAnimationView(name: name, bundle: bundle)
-                    self?.clearLottieView()
-                    self?.setupLottieView(lottieView)
-                    self?.addLottieView(lottieView)
-                }
+                let lottieView = LOTAnimationView(name: name, bundle: bundle)
+                self?.clearLottieView()
+                self?.setupLottieView(lottieView)
+                self?.addLottieView(lottieView)
             }
 
         inputs.url.producer
-            .start(on: UIScheduler())
+            .observe(on: QueueScheduler.main)
             .skipNil()
             .skipRepeats()
             .startWithValues { [weak self] url in
-                DispatchQueue.main.async {
-                    let lottieView = LOTAnimationView(contentsOf: url)
-                    self?.clearLottieView()
-                    self?.setupLottieView(lottieView)
-                    self?.addLottieView(lottieView)
-                }
+                let lottieView = LOTAnimationView(contentsOf: url)
+                self?.clearLottieView()
+                self?.setupLottieView(lottieView)
+                self?.addLottieView(lottieView)
             }
 
 
 		inputs.play.producer
-			.start(on: UIScheduler())
+            .observe(on: QueueScheduler.main)
 			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView?.play { [weak self] in self?.didStopAnimation(isComplete: $0) }
@@ -179,7 +175,7 @@ public final class LottieNode: ASDisplayNode {
 			}
 
 		inputs.playSection.producer
-			.start(on: UIScheduler())
+            .observe(on: QueueScheduler.main)
 			.skipNil()
 			.startWithValues { [weak self] start, end in
 
@@ -194,7 +190,7 @@ public final class LottieNode: ASDisplayNode {
 			}
 
 		inputs.pause.producer
-			.start(on: UIScheduler())
+            .observe(on: QueueScheduler.main)
 			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView?.pause()
@@ -202,7 +198,7 @@ public final class LottieNode: ASDisplayNode {
 			}
 
 		inputs.stop.producer
-			.start(on: UIScheduler())
+            .observe(on: QueueScheduler.main)
 			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView?.stop()
@@ -210,7 +206,7 @@ public final class LottieNode: ASDisplayNode {
 			}
 
 		inputs.progress.producer
-			.start(on: UIScheduler())
+            .observe(on: QueueScheduler.main)
 			.skipNil()
             .skipRepeats()
 			.startWithValues { [weak self] in
