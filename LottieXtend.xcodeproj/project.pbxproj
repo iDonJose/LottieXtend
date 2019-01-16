@@ -53,7 +53,6 @@
 		82DA9EC921A153100058EDB3 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		82DA9ECA21A153100058EDB3 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		82DA9ECB21A153100058EDB3 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		82DA9ECC21A153100058EDB3 /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = project.yml; sourceTree = "<group>"; };
 		82DA9ECD21A153110058EDB3 /* Podfile.lock */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
 		82DA9ECE21A153110058EDB3 /* .swift-version */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-version"; sourceTree = "<group>"; };
 		82DA9ECF21A153110058EDB3 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftlint.yml; sourceTree = "<group>"; };
@@ -117,7 +116,6 @@
 				82DA9ECA21A153100058EDB3 /* .gitignore */,
 				82DA9ECE21A153110058EDB3 /* .swift-version */,
 				82DA9ECF21A153110058EDB3 /* .swiftlint.yml */,
-				82DA9ECC21A153100058EDB3 /* project.yml */,
 				82DA9EC721A153100058EDB3 /* LottieXtend.podspec */,
 				82DA9ECB21A153100058EDB3 /* Podfile */,
 				82DA9ECD21A153110058EDB3 /* Podfile.lock */,
@@ -188,8 +186,8 @@
 			children = (
 				FR_5D750C407C4419FC99583A93DE6B2F2F /* LottieXtend.h */,
 				FR_2595872FB5060345F20B3C886C6FAC17 /* Info.plist */,
-				82FB6B8921A17FAF00536005 /* Extensions */,
 				82DA9ED021A153420058EDB3 /* Nodes */,
+				82FB6B8921A17FAF00536005 /* Extensions */,
 				82FB6B8C21A1E36C00536005 /* Helpers */,
 			);
 			path = Sources;

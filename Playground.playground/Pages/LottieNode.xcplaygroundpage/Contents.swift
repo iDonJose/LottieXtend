@@ -1,3 +1,7 @@
+/*:
+ ## `LottieNode`
+ */
+
 import AsyncDisplayKit
 import LottieXtend
 import PlaygroundSupport
@@ -5,61 +9,25 @@ import PlaygroundSupport
 
 let node = LottieNode()
 
-/*:
- ### `autoStart`, `autoRepeats`, `isReversed`, `speed`, `shouldRasterize`, `contentMode`
- Set properties before or after underlying animation view is loaded.
- */
+node.frame.size = .init(width: 400, height: 300)
+node.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
 
-node.visual.autoStart = true
+node.visual.autoStart = false
 node.visual.autoRepeats = true
 node.visual.isReversed = false
 node.visual.speed = 2
 node.visual.shouldRasterize = true
 node.visual.contentMode = .scaleAspectFit
 
-/*:
- ### `setAnimation(file:bundle:)`
- Changes source file and bundle of animation.
- */
-node.inputs.file.swap((name: "switch.json", bundle: .main))
 
-/*:
- ### `Inputs.play`, `Inputs.playSection`, `Inputs.pause`, `Inputs. stop`, `Inputs.progress`
- Control animation.
- */
+node.inputs.source.swap(((name: "switch.json", bundle: .main), nil))
 
-DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-    print("Pause animation")
-    node.inputs.pause.swap(())
-    print("Set animation's progress to 20%")
-    node.inputs.progress.swap(0.2)
-}
-
-DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-    print("Plays animation from 60% to 100%")
-    node.inputs.playSection.swap((from: 0.6, to: 1))
-}
-
-/*:
- ### `Outputs.isAnimating`
- Animation's state.
- */
 node.outputs.isAnimating.producer
-    .skipRepeats()
-    .startWithValues { print("🎥 Is animating : \($0)") }
+    .startWithValues { print("\($0 ? "▶️" : "⏸")") }
+
+node.inputs.play.swap(())
 
 
-
-node.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-
-let container = ASDisplayNode()
-container.frame.size = .init(width: 400, height: 600)
-container.addSubnode(node)
-container.layoutSpecBlock = { _, _ in
-    node.style.preferredSize = CGSize(width: 60, height: 40)
-    return ASCenterLayoutSpec(centeringOptions: .XY, sizingOptions: [], child: node)
-}
-
-PlaygroundPage.current.liveView = container.view
+PlaygroundPage.current.liveView = node.view
 
 //: < [Summary](Summary) | [Next](@next) >

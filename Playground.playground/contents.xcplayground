@@ -2,7 +2,7 @@
 <playground version='6.0' target-platform='ios' display-mode='raw' executeOnSourceChanges='false'>
     <pages>
         <page name='Summary'/>
-        <page name='LOTAnimationView'/>
         <page name='LottieNode'/>
+        <page name='LOTAnimationView'/>
     </pages>
 </playground>

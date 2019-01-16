@@ -1,57 +1,49 @@
+/*:
+ ## `LOTAnimationView`
+ */
+
 import Lottie
 import LottieXtend
 import PlaygroundSupport
 
 
-var lottieView = LOTAnimationView()
+let lottieView = LOTAnimationView(name: "animation.json")
+lottieView.frame.size = .init(width: 400, height: 400)
+lottieView.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
 
-/*:
- ### `setAnimation(file:bundle:)`
- Sets animation source file and bundle.
- */
-
-lottieView = LOTAnimationView.init(name: "animation.json", bundle: .main)
+lottieView.autoReverseAnimation = true
+lottieView.loopAnimation = true
 
 /*:
  ### `addSubView(_:toLayerNamed:)`
- Adds a view to a layer.
+ Adds a view to one layer of the animation
  */
 
-let view_1 = UIView()
-view_1.backgroundColor = #colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 1)
-view_1.frame.size = .init(width: 20, height: 20)
-lottieView.addSubView(view_1, toLayerNamed: "Circle 1")
+let circle = UIView()
+circle.frame.origin.x = -20
+circle.frame.size = .init(width: 20, height: 20)
+circle.layer.cornerRadius = 10
+circle.backgroundColor = #colorLiteral(red: 0.2268531035, green: 0.9372549057, blue: 0.1249458688, alpha: 1)
+lottieView.addSubView(circle, toLayerNamed: "Circle 1")
 
-/*:
- ### `maskSubView(:toLayerNamed:)`
- Adds a view and masks it with layer.
- */
-
-let view_2 = UIView()
-view_2.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-view_2.frame.origin = .init(x: 20, y: 20)
-//lottieView.maskSubView(view_2, toLayerNamed: "Circle 1")
 
 /*:
  ### `setColor(_:for:)`
- Changes a layer's fill color.
+ Changes color parameter in a layer
  > See also `setValue(_:for:)`, `setPoint(_:for:)`, `setSize(_:for:)`, `setPath(_:for:)`
  */
 
-lottieView.setColor(#colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1), for: "Line 1.Forme 1.Fond 1.Color")
+lottieView.setColor(#colorLiteral(red: 0.2031991126, green: 0.3204490806, blue: 0.9690987723, alpha: 1), for: "Line 1.Forme 1.Fond 1.Color")
+
 
 /*:
  ### `setColor(for:_:)`
- Changes a layer's fill color according to current progress.
+ Changes color parameter in a layer dynamically when progress changes
  > See also `setValue(for:_:)`, `setPoint(for:_:)`, `setSize(for:_:)`, `setPath(for:_:)`
  */
 
-DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-    lottieView.setColor(for: "Line 1.Forme 1.Fond 1.Color") { p in
-        if p < 0.33 { print("Line is blue"); return #colorLiteral(red: 0.1233691564, green: 0.1807482785, blue: 0.9666399275, alpha: 1) }
-        else if p < 0.66 { print("Line is white"); return #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1) }
-        else { print("Line is red"); return #colorLiteral(red: 0.9666399275, green: 0.09782117499, blue: 0.2961584293, alpha: 1) }
-    }
+lottieView.setColor(for: "Line 1.Forme 1.Contour 1.Color") {
+    return $0.truncatingRemainder(dividingBy: 0.2) < 0.1 ? #colorLiteral(red: 0.2791606399, green: 0.9690987723, blue: 0.2515343422, alpha: 1) : #colorLiteral(red: 0.9690987723, green: 0.4401682425, blue: 0.39307365, alpha: 1)
 }
 
 /*:
@@ -59,17 +51,10 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
  Stops changing value.
  */
 
-DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
-    print("Stop changing line color")
-    lottieView.cancelValueCallback(for: "Line 1.Forme 1.Fond 1.Color")
-}
+lottieView.cancelValueCallback(for: "Line 1.Forme 1.Fond 1.Color")
 
-
-lottieView.frame.size = lottieView.sceneModel!.compBounds.size
-lottieView.autoReverseAnimation = true
-lottieView.loopAnimation = true
-lottieView.play()
 
 PlaygroundPage.current.liveView = lottieView
+lottieView.play()
 
 //: < [Summary](Summary) | [Next](@next) >
