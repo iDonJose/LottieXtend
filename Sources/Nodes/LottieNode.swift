@@ -20,6 +20,9 @@ public final class LottieNode: ASDisplayNode {
 
 	// MARK: Properties
 
+    /// Node disposable
+    public lazy var disposable = CompositeDisposable()
+    // Queue
 	private lazy var queue = QueueScheduler(qos: .userInitiated, name: hexAddress(self))
 
 
@@ -28,23 +31,9 @@ public final class LottieNode: ASDisplayNode {
 
     public override init() {
         super.init()
-
 		setViewBlock { [unowned self] in
 
-            var lottieView: LOTAnimationView
-
-
-            if let (name, bundle) = self.inputs.file.value {
-                lottieView = LOTAnimationView(name: name, bundle: bundle)
-            }
-            else if let url = self.inputs.url.value {
-                lottieView = LOTAnimationView(contentsOf: url)
-            }
-            else {
-                lottieView = LOTAnimationView()
-            }
-
-
+            let lottieView = LOTAnimationView()
             self.setupLottieView(lottieView)
             self.lottieView = lottieView
 
@@ -60,19 +49,15 @@ public final class LottieNode: ASDisplayNode {
             let container = UIView()
             container.addSubview(lottieView)
 
+			self.displayVisual()
+
 			return container
 		}
-
-		defer { visual = .init() }
 	}
 
-
     private func setupLottieView(_ lottieView: LOTAnimationView) {
-
 		lottieView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
 		applyVisual(to: lottieView)
-
     }
 
     private func addLottieView(_ lottieView: LOTAnimationView) {
@@ -109,9 +94,29 @@ public final class LottieNode: ASDisplayNode {
 
     public override func didLoad() {
 		super.didLoad()
-		displayVisual()
+
+		let visual = self.visual
+		self.visual = visual
+
 		queue.queue.async { self.bindInputs() }
-	}
+    }
+
+    public override func didEnterDisplayState() {
+        super.didEnterDisplayState()
+
+		if disposable.isDisposed { disposable = .init() }
+
+        displayVisual()
+        queue.queue.async { self.bindInputs() }
+    }
+
+    public override func didExitDisplayState() {
+        super.didExitDisplayState()
+
+		inputs.reset()
+		outputs.reset()
+		disposable.dispose()
+    }
 
 
 
@@ -119,10 +124,8 @@ public final class LottieNode: ASDisplayNode {
 
 	public struct Inputs {
 
-        /// File containing animation
-        public let file = MutableProperty<(name: String, bundle: Bundle)?>(nil)
-        /// URL containing animation
-        public let url = MutableProperty<URL?>(nil)
+		/// File containing animation or URL containing animation
+		public let source = MutableProperty<((name: String, bundle: Bundle)?, URL?)>((nil, nil))
 
 		/// Plays animation
 		public let play = MutableProperty<()?>(nil)
@@ -136,6 +139,14 @@ public final class LottieNode: ASDisplayNode {
 		/// Sets animation progress
 		public let progress = MutableProperty<CGFloat?>(nil)
 
+        fileprivate func reset() {
+            play.swap(nil)
+            playSection.swap(nil)
+            pause.swap(nil)
+			stop.swap(nil)
+			progress.swap(nil)
+        }
+
 	}
 
 
@@ -143,30 +154,30 @@ public final class LottieNode: ASDisplayNode {
 
 	private func bindInputs() {
 
-        inputs.file.producer
+        disposable += inputs.source.producer
             .observe(on: QueueScheduler.main)
-            .skipNil()
-            .skipRepeats { $0.name == $1.name && $0.bundle == $1.bundle }
-            .startWithValues { [weak self] name, bundle in
-                let lottieView = LOTAnimationView(name: name, bundle: bundle)
-                self?.clearLottieView()
-                self?.setupLottieView(lottieView)
-                self?.addLottieView(lottieView)
+            .startWithValues { [weak self] tuple in
+
+				let (file, url) = tuple
+
+				guard
+					let self = self ,
+					file != nil || url != nil
+					else { return }
+
+
+				let lottieView: LOTAnimationView
+
+				if let url = url { lottieView = .init(contentsOf: url) }
+				else { lottieView = .init(name: file!.name, bundle: file!.bundle) }
+
+				self.clearLottieView()
+				self.setupLottieView(lottieView)
+				self.addLottieView(lottieView)
+
             }
 
-        inputs.url.producer
-            .observe(on: QueueScheduler.main)
-            .skipNil()
-            .skipRepeats()
-            .startWithValues { [weak self] url in
-                let lottieView = LOTAnimationView(contentsOf: url)
-                self?.clearLottieView()
-                self?.setupLottieView(lottieView)
-                self?.addLottieView(lottieView)
-            }
-
-
-		inputs.play.producer
+		disposable += inputs.play.producer
             .observe(on: QueueScheduler.main)
 			.skipNil()
 			.startWithValues { [weak self] _ in
@@ -174,7 +185,7 @@ public final class LottieNode: ASDisplayNode {
 				self?.outputs._isAnimating.swap(true)
 			}
 
-		inputs.playSection.producer
+		disposable += inputs.playSection.producer
             .observe(on: QueueScheduler.main)
 			.skipNil()
 			.startWithValues { [weak self] start, end in
@@ -189,7 +200,7 @@ public final class LottieNode: ASDisplayNode {
 
 			}
 
-		inputs.pause.producer
+		disposable += inputs.pause.producer
             .observe(on: QueueScheduler.main)
 			.skipNil()
 			.startWithValues { [weak self] _ in
@@ -197,7 +208,7 @@ public final class LottieNode: ASDisplayNode {
 				self?.outputs._isAnimating.swap(false)
 			}
 
-		inputs.stop.producer
+		disposable += inputs.stop.producer
             .observe(on: QueueScheduler.main)
 			.skipNil()
 			.startWithValues { [weak self] _ in
@@ -205,7 +216,7 @@ public final class LottieNode: ASDisplayNode {
 				self?.outputs._isAnimating.swap(false)
 			}
 
-		inputs.progress.producer
+		disposable += inputs.progress.producer
             .observe(on: QueueScheduler.main)
 			.skipNil()
             .skipRepeats()
@@ -229,6 +240,10 @@ public final class LottieNode: ASDisplayNode {
         /// Animation was stopped, forwarding wether animation was not interrupted and went through a the targeted progress
         public var wasStopped: Property<Bool?> { return .init(self._wasStopped) }
         fileprivate let _wasStopped = MutableProperty<Bool?>(nil)
+
+		fileprivate func reset() {
+			_wasStopped.swap(nil)
+		}
 
 	}
 
@@ -259,20 +274,18 @@ public final class LottieNode: ASDisplayNode {
 	// MARK: - Visual
 
 	public var visual = Visual() {
-		didSet { needsDisplay = visual != oldValue }
+		didSet { needsDisplay = needsDisplay || visual != oldValue }
 	}
 
-	private var needsDisplay = false
+	private var needsDisplay = true
 
 	public func displayVisual() {
-
 		guard needsDisplay else { return }
 		needsDisplay = false
 
-		guard let lottieView = lottieView else { return }
-
-		applyVisual(to: lottieView)
-
+        if let lottieView = lottieView {
+            applyVisual(to: lottieView)
+        }
 	}
 
     private func applyVisual(to lottieView: LOTAnimationView) {
