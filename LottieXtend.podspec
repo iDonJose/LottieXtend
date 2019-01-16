@@ -5,10 +5,11 @@
 Pod::Spec.new do |s|
 
     s.name         = "LottieXtend"
-    s.version      = "1.0.0"
+    s.version      = "1.1.0"
     s.summary      = "Lottie + Texture (AsyncDisplayKit)"
     s.description  = <<-DESC
-                        `LottieXtend` provides a (`Texture`'s) Node wrapping a Lottie animation view and adds some handy methods.
+                        Use `LottieXtend` to integrate Lottie in your Texture based UI.
+						`LottieNode` is the component of this framework, and offers the same capability and more as its counterpart `LottieAnimationView`.
                         DESC
     s.homepage     = "https://github.com/iDonJose/LottieXtend"
     s.source       = { :git => "https://github.com/iDonJose/LottieXtend.git", :tag => "#{s.version}" }
