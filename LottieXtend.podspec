@@ -5,7 +5,7 @@
 Pod::Spec.new do |s|
 
     s.name         = "LottieXtend"
-    s.version      = "1.1.0"
+    s.version      = "1.0.0"
     s.summary      = "Lottie + Texture (AsyncDisplayKit)"
     s.description  = <<-DESC
                         Use `LottieXtend` to integrate Lottie in your Texture based UI.
