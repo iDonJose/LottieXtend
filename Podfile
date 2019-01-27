@@ -13,7 +13,8 @@ def pods
   pod 'Texture/Core', '~> 2.7'
 
   # Reactive
-  pod 'ReactiveSwift', '~> 4.0'
+  #pod 'ReactiveSwifty', '~> 1.1'
+  pod 'ReactiveSwifty', :path => '../../Frameworks/ReactiveSwifty'
 
   # Linting
   pod 'SwiftLint', '~> 0.28'

@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
 
     s.frameworks = "Foundation", "UIKit"
 
-    s.dependency "ReactiveSwift", "~> 4.0"
+    s.dependency "ReactiveSwifty", "~> 1.1"
 	s.dependency "lottie-ios", "~> 2.5"
 	s.dependency "Texture/Core", "~> 2.7"
 

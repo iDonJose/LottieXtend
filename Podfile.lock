@@ -1,67 +1,47 @@
 PODS:
   - lottie-ios (2.5.2)
   - Nimble (7.3.1)
-  - PINCache (3.0.1-beta.6):
-    - PINCache/Arc-exception-safe (= 3.0.1-beta.6)
-    - PINCache/Core (= 3.0.1-beta.6)
-  - PINCache/Arc-exception-safe (3.0.1-beta.6):
-    - PINCache/Core
-  - PINCache/Core (3.0.1-beta.6):
-    - PINOperation (~> 1.1.0)
-  - PINOperation (1.1.1)
-  - PINRemoteImage/Core (3.0.0-beta.13):
-    - PINOperation
-  - PINRemoteImage/iOS (3.0.0-beta.13):
-    - PINRemoteImage/Core
-  - PINRemoteImage/PINCache (3.0.0-beta.13):
-    - PINCache (= 3.0.1-beta.6)
-    - PINRemoteImage/Core
   - Quick (1.3.2)
   - ReactiveSwift (4.0.0):
     - Result (~> 4.0)
-  - Result (4.0.0)
+  - ReactiveSwifty (1.0.1):
+    - ReactiveSwift (~> 4.0)
+  - Result (4.1.0)
   - SwiftLint (0.28.0)
-  - Texture (2.7):
-    - Texture/PINRemoteImage (= 2.7)
   - Texture/Core (2.7)
-  - Texture/PINRemoteImage (2.7):
-    - PINRemoteImage/iOS (= 3.0.0-beta.13)
-    - PINRemoteImage/PINCache
-    - Texture/Core
 
 DEPENDENCIES:
   - lottie-ios (~> 2.5)
   - Nimble (~> 7.3)
   - Quick (~> 1.3)
-  - ReactiveSwift (~> 4.0)
+  - ReactiveSwifty (from `../../Frameworks/ReactiveSwifty`)
   - SwiftLint (~> 0.28)
-  - Texture (~> 2.7)
+  - Texture/Core (~> 2.7)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - lottie-ios
     - Nimble
-    - PINCache
-    - PINOperation
-    - PINRemoteImage
     - Quick
     - ReactiveSwift
     - Result
     - SwiftLint
     - Texture
 
+EXTERNAL SOURCES:
+  ReactiveSwifty:
+    :path: "../../Frameworks/ReactiveSwifty"
+
 SPEC CHECKSUMS:
   lottie-ios: 3fef45d3fabe63e3c7c2eb603dd64ddfffc73062
   Nimble: 04f732da099ea4d153122aec8c2a88fd0c7219ae
-  PINCache: d195fdba255283f7e9900a55e3cced377f431f9b
-  PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
-  PINRemoteImage: d6d51c5d2adda55f1ce30c96e850b6c4ebd2856a
   Quick: 2623cb30d7a7f41ca62f684f679586558f483d46
   ReactiveSwift: a2bb9ace428a109e9c0209615645d9d286c8c433
-  Result: 7645bb3f50c2ce726dd0ff2fa7b6f42bbe6c3713
+  ReactiveSwifty: c37481cb3a8ec0462c00cb8c7916ced075ecdb78
+  Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
   SwiftLint: 088cfacb75b45970017e62b7524d506776d60148
   Texture: 9d7e38965cf22ccd7cd9c249dd78b3f14e70ab6c
 
-PODFILE CHECKSUM: 1c59878dc5d58f8b6e655797ab60d706ac3a849e
+PODFILE CHECKSUM: b32916c9435f64d9d48faa79154bdb4150aafbe1
 
 COCOAPODS: 1.5.3

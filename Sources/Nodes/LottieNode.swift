@@ -8,6 +8,7 @@
 import AsyncDisplayKit
 import Lottie
 import ReactiveSwift
+import ReactiveSwifty
 
 
 
@@ -128,23 +129,23 @@ public final class LottieNode: ASDisplayNode {
 		public let source = MutableProperty<((name: String, bundle: Bundle)?, URL?)>((nil, nil))
 
 		/// Plays animation
-		public let play = MutableProperty<()?>(nil)
+		public let play = MutableActionProperty<()>()
 		/// Plays animation on a given section
-		public let playSection = MutableProperty<(from: CGFloat?, to: CGFloat)?>(nil)
+		public let playSection = MutableActionProperty<(from: CGFloat?, to: CGFloat)>()
 		/// Pauses animation
-		public let pause = MutableProperty<()?>(nil)
+		public let pause = MutableActionProperty<()>()
 		/// Stops animation
-		public let stop = MutableProperty<()?>(nil)
+		public let stop = MutableActionProperty<()>()
 
 		/// Sets animation progress
-		public let progress = MutableProperty<CGFloat?>(nil)
+		public let progress = MutableProperty<CGFloat>(0)
 
         fileprivate func reset() {
-            play.swap(nil)
-            playSection.swap(nil)
-            pause.swap(nil)
-			stop.swap(nil)
-			progress.swap(nil)
+            play.reset()
+            playSection.reset()
+            pause.reset()
+			stop.reset()
+			progress.swap(0)
         }
 
 	}
@@ -179,7 +180,6 @@ public final class LottieNode: ASDisplayNode {
 
 		disposable += inputs.play.producer
             .observe(on: QueueScheduler.main)
-			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView?.play { [weak self] in self?.didStopAnimation(isComplete: $0) }
 				self?.outputs._isAnimating.swap(true)
@@ -187,7 +187,6 @@ public final class LottieNode: ASDisplayNode {
 
 		disposable += inputs.playSection.producer
             .observe(on: QueueScheduler.main)
-			.skipNil()
 			.startWithValues { [weak self] start, end in
 
                 let progress = self?.lottieView?.animationProgress ?? 0
@@ -202,7 +201,6 @@ public final class LottieNode: ASDisplayNode {
 
 		disposable += inputs.pause.producer
             .observe(on: QueueScheduler.main)
-			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView?.pause()
 				self?.outputs._isAnimating.swap(false)
@@ -210,7 +208,6 @@ public final class LottieNode: ASDisplayNode {
 
 		disposable += inputs.stop.producer
             .observe(on: QueueScheduler.main)
-			.skipNil()
 			.startWithValues { [weak self] _ in
 				self?.lottieView?.stop()
 				self?.outputs._isAnimating.swap(false)
@@ -218,7 +215,6 @@ public final class LottieNode: ASDisplayNode {
 
 		disposable += inputs.progress.producer
             .observe(on: QueueScheduler.main)
-			.skipNil()
             .skipRepeats()
 			.startWithValues { [weak self] in
 				self?.lottieView?.animationProgress = $0
@@ -238,11 +234,11 @@ public final class LottieNode: ASDisplayNode {
 		fileprivate let _isAnimating = MutableProperty<Bool>(false)
 
         /// Animation was stopped, forwarding wether animation was not interrupted and went through a the targeted progress
-        public var wasStopped: Property<Bool?> { return .init(self._wasStopped) }
-        fileprivate let _wasStopped = MutableProperty<Bool?>(nil)
+        public var wasStopped: ActionProperty<Bool> { return .init(self._wasStopped) }
+        fileprivate let _wasStopped = MutableActionProperty<Bool>()
 
 		fileprivate func reset() {
-			_wasStopped.swap(nil)
+			_wasStopped.reset()
 		}
 
 	}

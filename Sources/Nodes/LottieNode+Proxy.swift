@@ -128,5 +128,5 @@ extension LottieNode {
 						 _ colorCallback: @escaping (CGFloat) -> UIColor) {
 		lottieView?.setColor(for: keypath, colorCallback)
 	}
-	
+
 }
