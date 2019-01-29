@@ -1,7 +1,6 @@
 # LottieXtend
 
 Use `LottieXtend` to integrate Lottie in your [`Texture`](https://github.com/TextureGroup/Texture) based UI.
-> `LottieXtend` provides a ([`Texture`](https://github.com/TextureGroup/Texture)'s) Node wrapping a [Lottie](https://github.com/airbnb/lottie-ios) animation view and adds some handy methods.
 <p align="center">
 	<a href="https://swift.org">
         <img src="https://img.shields.io/badge/Swift-4.2-orange.svg" />
